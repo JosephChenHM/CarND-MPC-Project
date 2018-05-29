@@ -100,12 +100,27 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
+          // Lf
+          const double Lf = 2.67;
+          
+          // Actuator latency in milliseconds.
+          const int actuatorLatency =  100;
+
+          // Actuator latency in seconds.
+          const double latency = actuatorLatency / 1000.0;
+
+          // State after delay.
+          px = px + ( v * cos(psi) * latency );
+          py = py + ( v * sin(psi) * latency );
+          psi = psi - ( v * current_steer / Lf * latency );
+          v = v + current_throttle * latency;
+
           // Transform waypoints from map's coordinate system to vehicle's coordinate system
           // => px = 0, py = 0, psi = 0
           auto ptsx_transform = Eigen::VectorXd(ptsx.size());
-          auto ptsy_transform = Eigen::VectorXd(ptsy.size());
+          auto ptsy_transform = Eigen::VectorXd(ptsx.size());
 
-          for(int i = 0; i < ptsx.size(); i++)
+          for(unsigned int i = 0; i < ptsx.size(); i++)
           {
             double dx = ptsx[i] - px;
             double dy = ptsy[i] - py;
@@ -123,27 +138,9 @@ int main() {
           const double cte0 = polyeval(coeffs, 0); // px, py = 0
           const double epsi0 = -atan(coeffs[1]);
 
-          // Actuator latency in milliseconds.
-          const int actuatorLatency =  100;
-
-          // Actuator latency in seconds.
-          double latency = actuatorLatency / 1000.0;
-
-          latency += 0.3;
-          // Lf
-          const double Lf = 2.67;
-
-          // State after delay.
-          double x_delay = x0 + ( v * cos(psi0) * latency );
-          double y_delay = y0 + ( v * sin(psi0) * latency );
-          double psi_delay = psi0 - ( v * current_steer * latency / Lf );
-          double v_delay = v + current_throttle * latency;
-          double cte_delay = cte0;// + ( v * sin(epsi0) * latency );
-          double epsi_delay = epsi0;// - ( v * atan(coeffs[1]) * latency / Lf );
-
           // Define the state vector.
           Eigen::VectorXd state(6);
-          state << x_delay, y_delay, psi_delay, v_delay, cte_delay, epsi_delay;
+          state << x0, y0, psi0, v, cte0, epsi0;
 
           // Solve MPC
           auto vars = mpc.Solve(state, coeffs);
@@ -163,15 +160,11 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-          for(int i = 2; i < vars.size(); i++)
-          {
-            if(i%2 == 0)
-            {
-              mpc_x_vals.push_back(vars[i]);
-            }
-            else
-            {
-              mpc_y_vals.push_back(vars[i]);
+          for (unsigned int i = 2; i < vars.size(); i++ ) {
+            if ( i % 2 == 0 ) {
+              mpc_x_vals.push_back( vars[i] );
+            } else {
+              mpc_y_vals.push_back( vars[i] );
             }
           }
 
