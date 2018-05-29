@@ -2,6 +2,9 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Driving Simulator
+### Driving Video
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/Gc68NO1NEm8/sddefault.jpg )](https://www.youtube.com/watch?v=Gc68NO1NEm8)
 
 ## The Vehicle Model
 The vehicle model used here is a kinematic bicycle model that neglecting the complex dynamical effect such as vehicle inertia, tires friction, and tire slip angle. The model equations are as follow:
@@ -15,7 +18,7 @@ The vehicle model used here is a kinematic bicycle model that neglecting the com
 ## Timestep Length and Elapsed Duration (N & dt)
 The prediction horizon is define as `T = N * dt`. If the prediction horizon is too short, the MPC will be sensitive. It reacts fast but easily goes off the track. Increase prediction horizon help solve this problem; however, it means that we have to solve bigger MPC problem. This will increase latency for the car.
 
-I first choose my first parameter set `T=1, N=20, dt=0.1`. It predicts 2 sec trajectory for the future. However,  I found it really unstable for my simulator. This is because my laptop is quite old and it caused long latency that my car really unstable. After several trial and error, I finalize my parameter set `T=0.8, N=8, dt=0.1`. This could drive the car around 68mph in my simulator. The video is shown in the following section.
+I first choose my first parameter set `T=1, N=20, dt=0.1`. It predicts 2 sec trajectory for the future. However,  I found it really unstable for my simulator. This is because my laptop is quite old and it caused long latency that my car really unstable. After several trial and error, I finalize my parameter set `T=0.8, N=8, dt=0.1`. This could drive the car around 69mph in my simulator.
 
 ## Polynomial Fitting and MPC Preprocessing
 The reference waypoints are provided by Udacity simulator in Map coordinate system. In order to visualize reference trajectory of the car, we transformed it to car coordinate system.
